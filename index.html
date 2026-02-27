@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MY NFT – Attendance Badge (Cute Minimal)</title>
+<style>
+ body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:#fff6ec;color:#333;max-width:780px;margin:40px auto;padding:0 16px}
+ .card{border:1px solid #eee;border-radius:14px;padding:22px;background:#fff}
+ h1{margin:0 0 12px;font-weight:800}
+ .hint{color:#6b7280;font-size:14px}
+ img{max-width:240px;border-radius:16px;display:block;margin:14px 0}
+ button{background:#6c5ce7;color:#fff;border:0;border-radius:10px;padding:10px 14px;cursor:pointer}
+ button:disabled{opacity:.5;cursor:not-allowed}
+ .ok{color:#10b981}.err{color:#ef4444}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.8.1/ethers.umd.min.js"></script>
+</head>
+<body>
+<h1>MY NFT – Attendance Badge (Cute Minimal)</h1>
+<div class="card">
+  <p class="hint">เครือข่าย: Polygon Mumbai · Contract: <code id="ct">REPLACE_WITH_CUTE_CONTRACT</code></p>
+  <!-- ใส่ลิงก์รูปแบบ HTTP ของ Badge สไตล์ Cute (เช่น https://ipfs.io/ipfs/CID) -->
+  <img src="REPLACE_WITH_CUTE_BADGE_HTTP_URL" alt="Cute Badge" />
+  <button id="btnConnect">Connect Wallet</button>
+  <button id="btnMint" disabled>Mint MY NFT (Cute)</button>
+  <p id="status"></p><p id="tx"></p>
+</div>
+<script>
+const CONTRACT_ADDRESS = "0x28Bd22ffe3AA2A4B57E242A87a02EaAD2eD52B0d";
+const ABI = [{"inputs":[],"name":"mintBadge","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+let provider, signer, contract;
+async function connect(){
+  if(!window.ethereum){document.getElementById('status').textContent='ติดตั้ง MetaMask ก่อน';return;}
+  provider = new ethers.BrowserProvider(window.ethereum);
+  await provider.send('eth_requestAccounts',[]);
+  signer = await provider.getSigner();
+  contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+  document.getElementById('btnMint').disabled=false;
+  document.getElementById('status').textContent = 'เชื่อมต่อ: ' + await signer.getAddress();
+}
+async function mint(){
+  try{
+    document.getElementById('status').textContent='กำลังส่งธุรกรรม...';
+    const tx = await contract.mintBadge();
+    document.getElementById('tx').innerHTML = `TX: <a target="_blank" href="https://mumbai.polygonscan.com/tx/${tx.hash}">${tx.hash}</a>`;
+    await tx.wait();
+    document.getElementById('status').innerHTML='<span class="ok">สำเร็จ! ได้ MY NFT (Cute) แล้ว 🎉</span>';
+  }catch(e){
+    document.getElementById('status').innerHTML='<span class="err">'+(e?.shortMessage||e.message)+'</span>';
+  }
+}
+btnConnect.onclick = connect; btnMint.onclick = mint; ct.textContent = CONTRACT_ADDRESS;
+</script>
+</body>
+</html>
