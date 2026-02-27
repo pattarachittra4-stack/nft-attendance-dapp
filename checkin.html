@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Check‑in – MY NFT</title>
+<style>
+ body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;max-width:900px;margin:40px auto;padding:0 16px}
+ table{width:100%;border-collapse:collapse;margin-top:12px}
+ td,th{border:1px solid #eee;padding:8px}
+ th{background:#fafafa}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.8.1/ethers.umd.min.js"></script>
+</head>
+<body>
+<h1>Check‑in Dashboard – MY NFT</h1>
+<p>กรอก Contract Address (ของ Cute หรือ Neon) แล้วกดโหลดข้อมูล</p>
+<input id="addr" size="58" placeholder="0x..."/>
+<button id="btnLoad">โหลดข้อมูล</button>
+<table>
+  <thead><tr><th>#</th><th>Wallet</th><th>TX Hash</th></tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+<script>
+const RPC='https://rpc.ankr.com/polygon_mumbai';
+const ABI=['event TransferSingle(address indexed operator,address indexed from,address indexed to,uint256 id,uint256 value)'];
+async function load(){
+  const address=document.getElementById('addr').value.trim();
+  const provider=new ethers.JsonRpcProvider(RPC);
+  const contract=new ethers.Contract(address,ABI,provider);
+  const zero='0x0000000000000000000000000000000000000000';
+  const filter=contract.filters.TransferSingle(null,zero,null,null,null);
+  const logs=await provider.getLogs({address,fromBlock:0,toBlock:'latest',topics:filter.topics});
+  const iface=new ethers.Interface(ABI);
+  const rows=document.getElementById('rows'); rows.innerHTML='';
+  let i=1; for(const log of logs){
+    const p=iface.parseLog(log); if(Number(p.args[3])!==1) continue;
+    const to=p.args[2];
+    rows.insertAdjacentHTML('beforeend', `<tr><td>${i++}</td><td>${to}</td><td><a target="_blank" href="https://mumbai.polygonscan.com/tx/${log.transactionHash}">${log.transactionHash}</a></td></tr>`);
+  }
+}
+btnLoad.onclick=load;
+</script>
+</body>
+</html>
