@@ -1,0 +1,27 @@
+{
+  "name": "MY NFT – Attendance Badge (Cute Minimal)",
+  "description": "POAP Badge สำหรับผู้เข้าร่วมคลาส Data Analytics – Feb 2026 | สไตล์ Cute Minimal",
+  "image": "ipfs://REPLACE_WITH_CUTE_IMAGE_CID",
+  "attributes": [
+    {
+      "trait_type": "Theme",
+      "value": "Cute Minimal"
+    },
+    {
+      "trait_type": "Character",
+      "value": "ตุ๊กตา/ผีเสื้อ"
+    },
+    {
+      "trait_type": "Type",
+      "value": "POAP"
+    },
+    {
+      "trait_type": "Class",
+      "value": "Data Analytics"
+    },
+    {
+      "trait_type": "Month",
+      "value": "Feb 2026"
+    }
+  ]
+}
